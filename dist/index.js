@@ -25098,6 +25098,7 @@ async function run() {
     try {
         for (const outputs of (0, flatten_1.flatten)((0, inputs_1.getJSONFromInputs)())) {
             core.setOutput(outputs.name, outputs.value);
+            core.info(`Set output ${outputs.name}`);
         }
     }
     catch (error) {

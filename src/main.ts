@@ -10,6 +10,7 @@ export async function run(): Promise<void> {
   try {
     for (const outputs of flatten(getJSONFromInputs())) {
       core.setOutput(outputs.name, outputs.value)
+      core.info(`Set output ${outputs.name}`)
     }
   } catch (error) {
     // show a warning if something went wrong
