@@ -57,18 +57,19 @@ Varies depending on inputs.
 - name: Test
   id: json
   uses: benlei/json2outputs@v1
-  with: |
-    {
-      "foo": {
-        "bar": [1, 2, 3]
-      },
-      "hello": {
-        "world": "abc",
-        "example.com/foobar": "bye",
-        "yes": true,
-        "no": false
+  with:
+    json: |
+      {
+        "foo": {
+          "bar": [1, 2, 3]
+        },
+        "hello": {
+          "world": "abc",
+          "example.com/foobar": "bye",
+          "yes": true,
+          "no": false
+        }
       }
-    }
 
 - name: Output value:
   run: |
