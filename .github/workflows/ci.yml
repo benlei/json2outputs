@@ -83,7 +83,7 @@ jobs:
             exit 1
           fi
 
-          if [ "${{ steps.test-action.outputs['hello.example.com/foobar'] }}" != "bye" ]; then
+          if [ "${{ steps.test-action.outputs['hello["example.com/foobar"]'] }}" != "bye" ]; then
             echo "hello.example.com/foobar is not bye"
             exit 1
           fi
