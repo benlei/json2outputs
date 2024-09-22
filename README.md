@@ -42,8 +42,8 @@ Should output the following:
 
 | Input Name | Required | Default | Description                                                      |
 | ---------- | -------- | ------- | ---------------------------------------------------------------- |
-| `json`     | no       | ''      | The JSON body (string) to parse                                  |
-| `file`     | no       | ''      | The JSON file to parse. Ignored if `json` has a non-empty value. |
+| `json`     | no       | `''`    | The JSON body (string) to parse                                  |
+| `file`     | no       | `''`    | The JSON file to parse. Ignored if `json` has a non-empty value. |
 
 <!-- markdownlint-enable MD013 -->
 
@@ -51,7 +51,9 @@ Should output the following:
 
 Varies depending on inputs.
 
-## Example
+## Examples
+
+### Passing in a raw JSON body
 
 ```yaml
 - name: Test
@@ -70,6 +72,20 @@ Varies depending on inputs.
           "no": false
         }
       }
+
+- name: Output value:
+  run: |
+    echo ${{ steps.json.outputs['hello["example.com/foobar"]'] }}
+```
+
+### Passing in a JSON file
+
+```yaml
+- name: Test
+  id: json
+  uses: benlei/json2outputs@v1
+  with:
+    file: ./some.json
 
 - name: Output value:
   run: |
