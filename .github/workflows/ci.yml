@@ -57,8 +57,33 @@ jobs:
         id: test-action
         uses: ./
         with:
-          milliseconds: 2000
+          json: |
+            {
+              "foo": {
+                "bar": [1, 2, 3]
+              },
+              "hello": {
+                "world": "abc",
+                "example.com/foobar": "bye",
+                "yes": true,
+                "no": false
+              }
+            }
 
-      - name: Print Output
+      - name: Confirm outputs
         id: output
-        run: echo "${{ steps.test-action.outputs.time }}"
+        run: |
+          if [ "${{ steps.test-action.outputs['foo.bar[1]'] }}" != "2" ]; then
+            echo "foo.bar[1] is not 2"
+            exit 1
+          fi
+
+          if [ "${{ steps.test-action.outputs['hello.world'] }}" != "abc" ]; then
+            echo "hello.world is not abc"
+            exit 1
+          fi
+
+          if [ "${{ steps.test-action.outputs['hello.example.com/foobar'] }}" != "bye" ]; then
+            echo "hello.example.com/foobar is not bye"
+            exit 1
+          fi

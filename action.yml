@@ -1,23 +1,29 @@
-name: 'The name of your action here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'JSON to Outputs'
+description:
+  'This action will read in a JSON body / file and set them as outputs'
+author: 'benlei'
 
 # Add your action's branding here. This will appear on the GitHub Marketplace.
 branding:
-  icon: 'heart'
-  color: 'red'
+  icon: 'play'
+  color: 'orange'
 
 # Define your inputs here.
 inputs:
-  milliseconds:
-    description: 'Your input description here'
-    required: true
-    default: '1000'
+  json:
+    description:
+      'The JSON body to parse and output. If this is set, the file input will be
+      ignored.'
+    required: false
+  file:
+    description: 'The path to the JSON file to parse and output.'
+    required: false
 
 # Define your outputs here.
 outputs:
-  time:
-    description: 'Your output description here'
+  generic: # output will be available to future steps
+    description:
+      'This command will have generic output variables based the issue body'
 
 runs:
   using: node20

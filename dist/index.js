@@ -24920,6 +24920,153 @@ exports["default"] = _default;
 
 /***/ }),
 
+/***/ 1641:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.readFileSync = void 0;
+const fs_1 = __importDefault(__nccwpck_require__(7147));
+const readFileSync = (path) => fs_1.default.readFileSync(path, 'utf8');
+exports.readFileSync = readFileSync;
+
+
+/***/ }),
+
+/***/ 8143:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getKeyNotation = exports.isDotNotationUsable = exports.flatten = void 0;
+const flatten = (object) => {
+    if (object === null) {
+        return [];
+    }
+    if (Array.isArray(object)) {
+        return flattenRecursively(object, '');
+    }
+    else if (typeof object === 'object') {
+        return flattenRecursively(object, '');
+    }
+    // primitive... so we can't flatten it
+    return [];
+};
+exports.flatten = flatten;
+const isDotNotationUsable = (key) => /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(key);
+exports.isDotNotationUsable = isDotNotationUsable;
+const getKeyNotation = (prefix, key) => {
+    if (prefix.length === 0) {
+        return (0, exports.isDotNotationUsable)(key) ? key : `[${JSON.stringify(key)}]`;
+    }
+    return (0, exports.isDotNotationUsable)(key)
+        ? `${prefix}.${key}`
+        : `${prefix}[${JSON.stringify(key)}]`;
+};
+exports.getKeyNotation = getKeyNotation;
+const flattenRecursively = (object, prefix) => {
+    const result = [];
+    if (Array.isArray(object)) {
+        for (let i = 0; i < object.length; i++) {
+            result.push(...flattenObject(`${prefix}[${i}]`, object[i]));
+        }
+    }
+    else {
+        for (const key in object) {
+            result.push(...flattenObject((0, exports.getKeyNotation)(prefix, key), object[key]));
+        }
+    }
+    return result;
+};
+const flattenObject = (key, value) => {
+    if (value === null) {
+        return [{ name: key, value: '' }];
+    }
+    else if (Array.isArray(value)) {
+        return [...flattenRecursively(value, key)];
+    }
+    else if (typeof value === 'object') {
+        return [...flattenRecursively(value, key)];
+    }
+    else {
+        return [{ name: key, value: value.toString() }];
+    }
+};
+
+
+/***/ }),
+
+/***/ 7063:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getJSONFromInputs = exports.fileInput = exports.jsonInput = void 0;
+const core = __importStar(__nccwpck_require__(2186));
+const file_1 = __nccwpck_require__(1641);
+const jsonInput = () => core.getInput('json', {
+    required: false,
+    trimWhitespace: true
+});
+exports.jsonInput = jsonInput;
+const fileInput = () => core.getInput('file', {
+    required: false,
+    trimWhitespace: true
+});
+exports.fileInput = fileInput;
+const getJSONFromInputs = () => {
+    const json = (0, exports.jsonInput)();
+    const file = (0, exports.fileInput)();
+    try {
+        if (json) {
+            return JSON.parse(json);
+        }
+        else if (file) {
+            return JSON.parse((0, file_1.readFileSync)(file));
+        }
+        else {
+            return {};
+        }
+    }
+    catch (error) {
+        core.warning(`Couldn't parse JSON: ${error}`);
+        return {};
+    }
+};
+exports.getJSONFromInputs = getJSONFromInputs;
+
+
+/***/ }),
+
 /***/ 399:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -24951,52 +25098,23 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = run;
 const core = __importStar(__nccwpck_require__(2186));
-const wait_1 = __nccwpck_require__(5259);
+const flatten_1 = __nccwpck_require__(8143);
+const inputs_1 = __nccwpck_require__(7063);
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
  */
 async function run() {
     try {
-        const ms = core.getInput('milliseconds');
-        // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-        core.debug(`Waiting ${ms} milliseconds ...`);
-        // Log the current timestamp, wait, then log the new timestamp
-        core.debug(new Date().toTimeString());
-        await (0, wait_1.wait)(parseInt(ms, 10));
-        core.debug(new Date().toTimeString());
-        // Set outputs for other workflow steps to use
-        core.setOutput('time', new Date().toTimeString());
+        for (const outputs of (0, flatten_1.flatten)((0, inputs_1.getJSONFromInputs)())) {
+            core.setOutput(outputs.name, outputs.value);
+        }
     }
     catch (error) {
-        // Fail the workflow run if an error occurs
+        // show a warning if something went wrong
         if (error instanceof Error)
-            core.setFailed(error.message);
+            core.warning(error.message);
     }
-}
-
-
-/***/ }),
-
-/***/ 5259:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.wait = wait;
-/**
- * Wait for a number of milliseconds.
- * @param milliseconds The number of milliseconds to wait.
- * @returns {Promise<string>} Resolves with 'done!' after the wait is over.
- */
-async function wait(milliseconds) {
-    return new Promise(resolve => {
-        if (isNaN(milliseconds)) {
-            throw new Error('milliseconds not a number');
-        }
-        setTimeout(() => resolve('done!'), milliseconds);
-    });
 }
 
 
