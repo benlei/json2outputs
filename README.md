@@ -42,8 +42,8 @@ Should output the following:
 
 | Input Name | Required | Default | Description                                                      |
 | ---------- | -------- | ------- | ---------------------------------------------------------------- |
-| json       | no       | ''      | The JSON body (string) to parse                                  |
-| file       | no       | ''      | The JSON file to parse. Ignored if `json` has a non-empty value. |
+| `json`     | no       | ''      | The JSON body (string) to parse                                  |
+| `file`     | no       | ''      | The JSON file to parse. Ignored if `json` has a non-empty value. |
 
 <!-- markdownlint-enable MD013 -->
 
