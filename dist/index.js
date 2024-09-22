@@ -24944,9 +24944,9 @@ exports.readFileSync = readFileSync;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getKeyNotation = exports.isDotNotationUsable = exports.flatten = void 0;
-const isFlattenable = (object) => object === null || (!Array.isArray(object) && typeof object !== 'object');
+const isNotFlattenable = (object) => object === null || (!Array.isArray(object) && typeof object !== 'object');
 const flatten = (object) => {
-    if (isFlattenable(object)) {
+    if (isNotFlattenable(object)) {
         return [];
     }
     const stack = [{ value: object, prefix: '' }];

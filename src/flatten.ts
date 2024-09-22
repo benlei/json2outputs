@@ -1,10 +1,10 @@
 import { ActionOutput, Anything, FlattenStack } from './types'
 
-const isFlattenable = (object: Anything): boolean =>
+const isNotFlattenable = (object: Anything): boolean =>
   object === null || (!Array.isArray(object) && typeof object !== 'object')
 
 export const flatten = (object: Anything): ActionOutput[] => {
-  if (isFlattenable(object)) {
+  if (isNotFlattenable(object)) {
     return []
   }
 
