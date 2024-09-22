@@ -24944,18 +24944,36 @@ exports.readFileSync = readFileSync;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getKeyNotation = exports.isDotNotationUsable = exports.flatten = void 0;
+const isFlattenable = (object) => object === null || (!Array.isArray(object) && typeof object !== 'object');
 const flatten = (object) => {
-    if (object === null) {
+    if (isFlattenable(object)) {
         return [];
     }
-    if (Array.isArray(object)) {
-        return flattenRecursively(object, '');
+    const stack = [{ value: object, prefix: '' }];
+    const result = [];
+    while (stack.length) {
+        const { prefix, value } = stack[stack.length - 1];
+        stack.pop(); // IDE says it can potentially return undefined... so avoiding use of pop() here
+        if (Array.isArray(value)) {
+            for (let i = 0; i < value.length; i++) {
+                stack.push({ prefix: `${prefix}[${i}]`, value: value[i] });
+            }
+        }
+        else if (value === null) {
+            // handle null values
+            result.push({ name: prefix, value: '' });
+        }
+        else if (typeof value === 'object') {
+            for (const key in value) {
+                stack.push({ prefix: (0, exports.getKeyNotation)(prefix, key), value: value[key] });
+            }
+        }
+        else {
+            // Handle primitive values
+            result.push({ name: prefix, value: value.toString() });
+        }
     }
-    else if (typeof object === 'object') {
-        return flattenRecursively(object, '');
-    }
-    // primitive... so we can't flatten it
-    return [];
+    return result;
 };
 exports.flatten = flatten;
 const isDotNotationUsable = (key) => /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(key);
@@ -24969,34 +24987,6 @@ const getKeyNotation = (prefix, key) => {
         : `${prefix}[${JSON.stringify(key)}]`;
 };
 exports.getKeyNotation = getKeyNotation;
-const flattenRecursively = (object, prefix) => {
-    const result = [];
-    if (Array.isArray(object)) {
-        for (let i = 0; i < object.length; i++) {
-            result.push(...flattenObject(`${prefix}[${i}]`, object[i]));
-        }
-    }
-    else {
-        for (const key in object) {
-            result.push(...flattenObject((0, exports.getKeyNotation)(prefix, key), object[key]));
-        }
-    }
-    return result;
-};
-const flattenObject = (key, value) => {
-    if (value === null) {
-        return [{ name: key, value: '' }];
-    }
-    else if (Array.isArray(value)) {
-        return [...flattenRecursively(value, key)];
-    }
-    else if (typeof value === 'object') {
-        return [...flattenRecursively(value, key)];
-    }
-    else {
-        return [{ name: key, value: value.toString() }];
-    }
-};
 
 
 /***/ }),

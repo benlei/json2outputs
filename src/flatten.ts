@@ -1,18 +1,38 @@
-import { ActionOutput, AnyOutputtable, Anything } from './types'
+import { ActionOutput, Anything, FlattenStack } from './types'
+
+const isFlattenable = (object: Anything): boolean =>
+  object === null || (!Array.isArray(object) && typeof object !== 'object')
 
 export const flatten = (object: Anything): ActionOutput[] => {
-  if (object === null) {
+  if (isFlattenable(object)) {
     return []
   }
 
-  if (Array.isArray(object)) {
-    return flattenRecursively(object, '')
-  } else if (typeof object === 'object') {
-    return flattenRecursively(object, '')
+  const stack: FlattenStack[] = [{ value: object, prefix: '' }]
+  const result: ActionOutput[] = []
+
+  while (stack.length) {
+    const { prefix, value } = stack[stack.length - 1]
+    stack.pop() // IDE says it can potentially return undefined... so avoiding use of pop() here
+
+    if (Array.isArray(value)) {
+      for (let i = 0; i < value.length; i++) {
+        stack.push({ prefix: `${prefix}[${i}]`, value: value[i] })
+      }
+    } else if (value === null) {
+      // handle null values
+      result.push({ name: prefix, value: '' })
+    } else if (typeof value === 'object') {
+      for (const key in value) {
+        stack.push({ prefix: getKeyNotation(prefix, key), value: value[key] })
+      }
+    } else {
+      // Handle primitive values
+      result.push({ name: prefix, value: value.toString() })
+    }
   }
 
-  // primitive... so we can't flatten it
-  return []
+  return result
 }
 
 export const isDotNotationUsable = (key: string): boolean =>
@@ -26,34 +46,4 @@ export const getKeyNotation = (prefix: string, key: string): string => {
   return isDotNotationUsable(key)
     ? `${prefix}.${key}`
     : `${prefix}[${JSON.stringify(key)}]`
-}
-
-const flattenRecursively = (
-  object: AnyOutputtable,
-  prefix: string
-): ActionOutput[] => {
-  const result: ActionOutput[] = []
-  if (Array.isArray(object)) {
-    for (let i = 0; i < object.length; i++) {
-      result.push(...flattenObject(`${prefix}[${i}]`, object[i]))
-    }
-  } else {
-    for (const key in object) {
-      result.push(...flattenObject(getKeyNotation(prefix, key), object[key]))
-    }
-  }
-
-  return result
-}
-
-const flattenObject = (key: string, value: Anything): ActionOutput[] => {
-  if (value === null) {
-    return [{ name: key, value: '' }]
-  } else if (Array.isArray(value)) {
-    return [...flattenRecursively(value, key)]
-  } else if (typeof value === 'object') {
-    return [...flattenRecursively(value, key)]
-  } else {
-    return [{ name: key, value: value.toString() }]
-  }
 }

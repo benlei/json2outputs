@@ -11,3 +11,8 @@ export interface ActionOutput {
   name: string
   value: string
 }
+
+export interface FlattenStack {
+  prefix: string
+  value: Anything
+}

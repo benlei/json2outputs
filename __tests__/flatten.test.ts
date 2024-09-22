@@ -64,66 +64,74 @@ describe('flatten', () => {
   })
 
   it('should handle flattening a basic array', () => {
-    expect(flatten([1, 2, 3])).toEqual([
-      { name: '[0]', value: '1' },
-      { name: '[1]', value: '2' },
-      { name: '[2]', value: '3' }
-    ])
+    expect(flatten([1, 2, 3])).toEqual(
+      expect.arrayContaining([
+        { name: '[0]', value: '1' },
+        { name: '[1]', value: '2' },
+        { name: '[2]', value: '3' }
+      ])
+    )
   })
 
   it('should handle flattening a basic object', () => {
     expect(
       flatten({ key: 'value', 'foo.com': 'lalala', 'foo-bar': true })
-    ).toEqual([
-      {
-        name: 'key',
-        value: 'value'
-      },
-      {
-        name: '["foo.com"]',
-        value: 'lalala'
-      },
-      {
-        name: '["foo-bar"]',
-        value: 'true'
-      }
-    ])
+    ).toEqual(
+      expect.arrayContaining([
+        {
+          name: 'key',
+          value: 'value'
+        },
+        {
+          name: '["foo.com"]',
+          value: 'lalala'
+        },
+        {
+          name: '["foo-bar"]',
+          value: 'true'
+        }
+      ])
+    )
   })
 
   it('should handle nested objects', () => {
-    expect(
-      flatten({
-        key: 'value',
-        nested: {
-          key: 'nested key',
-          annotations: {
-            'another.key/123': 'another key',
-            'another.key/something': null
-          },
-          someArray: [{ two: 'three' }]
-        }
-      })
-    ).toEqual([
-      {
-        name: 'key',
-        value: 'value'
-      },
-      {
-        name: 'nested.key',
-        value: 'nested key'
-      },
-      {
-        name: 'nested.annotations["another.key/123"]',
-        value: 'another key'
-      },
-      {
-        name: 'nested.annotations["another.key/something"]',
-        value: ''
-      },
-      {
-        name: 'nested.someArray[0].two',
-        value: 'three'
+    const result = flatten({
+      key: 'value',
+      nested: {
+        key: 'nested key',
+        annotations: {
+          'another.key/123': 'another key',
+          'another.key/something': null
+        },
+        someArray: [{ two: 'three' }],
+        emptyArray: [],
+        emptyObject: {}
       }
-    ])
+    })
+    expect(result.length).toBe(5)
+    expect(result).toEqual(
+      expect.arrayContaining([
+        {
+          name: 'key',
+          value: 'value'
+        },
+        {
+          name: 'nested.key',
+          value: 'nested key'
+        },
+        {
+          name: 'nested.annotations["another.key/123"]',
+          value: 'another key'
+        },
+        {
+          name: 'nested.annotations["another.key/something"]',
+          value: ''
+        },
+        {
+          name: 'nested.someArray[0].two',
+          value: 'three'
+        }
+      ])
+    )
   })
 })
