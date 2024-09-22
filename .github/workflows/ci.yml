@@ -44,8 +44,8 @@ jobs:
         id: npm-ci-test
         run: npm run ci-test
 
-  test-action:
-    name: GitHub Actions Test
+  test-json:
+    name: Test JSON
     runs-on: ubuntu-latest
 
     steps:
@@ -69,6 +69,39 @@ jobs:
                 "no": false
               }
             }
+
+      - name: Confirm outputs
+        id: output
+        run: |
+          if [ "${{ steps.test-action.outputs['foo.bar[1]'] }}" != "2" ]; then
+            echo "foo.bar[1] is not 2"
+            exit 1
+          fi
+
+          if [ "${{ steps.test-action.outputs['hello.world'] }}" != "abc" ]; then
+            echo "hello.world is not abc"
+            exit 1
+          fi
+
+          if [ "${{ steps.test-action.outputs['hello["example.com/foobar"]'] }}" != "bye" ]; then
+            echo "hello.example.com/foobar is not bye"
+            exit 1
+          fi
+
+  test-file:
+    name: Test File
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Test Local Action
+        id: test-action
+        uses: ./
+        with:
+          file: .github/test-file.json
 
       - name: Confirm outputs
         id: output

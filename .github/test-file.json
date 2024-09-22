@@ -1,0 +1,11 @@
+{
+  "foo": {
+    "bar": [1, 2, 3]
+  },
+  "hello": {
+    "world": "abc",
+    "example.com/foobar": "bye",
+    "yes": true,
+    "no": false
+  }
+}
