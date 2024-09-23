@@ -15,13 +15,13 @@ export const flatten = (object: Anything): ActionOutput[] => {
     const { prefix, value } = stack[stack.length - 1]
     stack.pop() // IDE says it can potentially return undefined... so avoiding use of pop() here
 
-    if (Array.isArray(value)) {
+    if (value === null) {
+      // handle null values
+      result.push({ name: prefix, value: '' })
+    } else if (Array.isArray(value)) {
       for (let i = 0; i < value.length; i++) {
         stack.push({ prefix: `${prefix}[${i}]`, value: value[i] })
       }
-    } else if (value === null) {
-      // handle null values
-      result.push({ name: prefix, value: '' })
     } else if (typeof value === 'object') {
       for (const key in value) {
         stack.push({ prefix: getKeyNotation(prefix, key), value: value[key] })
