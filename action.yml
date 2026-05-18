@@ -26,5 +26,5 @@ outputs:
       'This command will have generic output variables based the issue body'
 
 runs:
-  using: node20
+  using: node24
   main: dist/index.js

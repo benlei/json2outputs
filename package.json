@@ -1,7 +1,7 @@
 {
   "name": "json2outputs",
   "description": "This action will read in a JSON body / file and set them as outputs",
-  "version": "1.0.8",
+  "version": "1.1.0",
   "author": "benlei",
   "private": true,
   "homepage": "https://github.com/benlei/json2outputs",
@@ -21,7 +21,7 @@
     ".": "./dist/index.js"
   },
   "engines": {
-    "node": ">=21"
+    "node": ">=24"
   },
   "scripts": {
     "bundle": "npm run format:write && npm run package",
